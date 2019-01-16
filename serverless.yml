@@ -20,6 +20,10 @@ provider:
     postgres_database: ${self:provider.config.postgres_database}
     postgres_password: ${self:provider.config.postgres_password}
     postgres_port: ${self:provider.config.postgres_port}
+    spaces_access_key: ${self:provider.config.spaces_access_key}
+    spaces_secret: ${self:provider.config.spaces_secret}
+    spaces_bucket: ${self:provider.config.spaces_bucket}
+    spaces_endpoint: ${self:provider.config.spaces_endpoint}
 
 plugins:
   - serverless-offline

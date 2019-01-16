@@ -5,7 +5,8 @@ create table Scripts
   name varchar(50) not null,
   description varchar(250) not null,
   price int,
-  type int
+  type int,
+  enabled boolean default false not null
 );
 
 create unique index Scripts_accessId_uindex
