@@ -1,0 +1,73 @@
+
+service: rspeer-serverless
+
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  provider: aws
+  config: ${file(./serverless-config.yml)}
+  environment:
+    cognito_key: ${self:provider.config.cognito_key}
+    cognito_private: ${self:provider.config.cognito_private}
+    cognito_region: ${self:provider.config.cognito_region}
+    cognito_user_pool_id: ${self:provider.config.cognito_user_pool_id}
+    cognito_client_id: ${self:provider.config.cognito_client_id}
+    redis_password: ${self:provider.config.redis_password}
+    redis_host: ${self:provider.config.redis_host}
+    postgres_user: ${self:provider.config.postgres_user}
+    postgres_host: ${self:provider.config.postgres_host}
+    postgres_database: ${self:provider.config.postgres_database}
+    postgres_password: ${self:provider.config.postgres_password}
+    postgres_port: ${self:provider.config.postgres_port}
+
+plugins:
+  - serverless-offline
+
+functions:
+  getScript:
+    name : getScript
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.getScript
+    events:
+      - http: GET script
+        request:
+          parameters:
+            querystrings:
+              url: true
+              
+  createScript:
+    name : createScript
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.createScript
+    events:
+      - http: POST script
+        
+  login:
+    name: login
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.login
+    events:
+      - http: POST login   
+        
+  me:
+    name: getMe
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.me
+    events:
+      - http: GET user/me  
+
+  getUserByUsername:
+    name: userbyUsername
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.getUserByUsername
+    events:
+      - http: GET user/byUsername          
+          
+         
+
