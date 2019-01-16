@@ -1,11 +1,10 @@
 const aws = require('aws-sdk');
 const fs = require('fs');
-const spacesEndpoint = new aws.Endpoint(process.env.spaces_endpoint);
 
 const s3 = new aws.S3({
     accessKeyId : process.env.spaces_access_key,
     secretAccessKey : process.env.spaces_secret,
-    endpoint: spacesEndpoint
+    endpoint: new aws.Endpoint(process.env.spaces_endpoint)
 });
 
 const list = async (prefix) => {
