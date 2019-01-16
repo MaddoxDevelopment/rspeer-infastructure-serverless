@@ -17,8 +17,8 @@ const ScriptService = {
             [name, accessId, description, price, type, false]);
         return insert.rows[0];
     },
-    setEnabled : async (accessId) => {
-        const update = await db.query(`UPDATE public.scripts SET enabled = TRUE WHERE accessid = $1 RETURNING *`, [accessId])
+    setEnabled : async (accessId, value) => {
+        const update = await db.query(`UPDATE public.scripts SET enabled = $1 WHERE accessid = $2 RETURNING *`, [value, accessId])
         return update.rows[0]
     }
 };
