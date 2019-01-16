@@ -25,7 +25,7 @@ const putObject = async (data, outDir) => {
 };
 
 const deleteObject = async (path) => {
-    return await promisify(s3.deleteObject({Key : path, Bucket : process.env.spaces_bucket});
+    return await promisify(s3.deleteObject({Key : path, Bucket : process.env.spaces_bucket}));
 };
 
 const SpacesServices = {
