@@ -8,7 +8,7 @@ const axios = require('axios');
 const Redis = require("../wrappers/redisWrapper");
 
 const pool = {
-    UserPoolId: process.env.cognito_user_pool_id, 
+    UserPoolId: process.env.cognito_user_pool_id,
     ClientId: process.env.cognito_client_id
 };
 
@@ -16,10 +16,10 @@ const getUserById = async (id) => {
     const provider = getProvider();
     const promise = new Promise((res, rej) => {
         provider.adminGetUser({
-            Username : id,
-            UserPoolId : pool.UserPoolId
+            Username: id,
+            UserPoolId: pool.UserPoolId
         }, function (err, data) {
-           err ? rej(err) : res(data);
+            err ? rej(err) : res(data);
         })
     });
     return convertToUserObject(await promise);
@@ -29,8 +29,8 @@ const searchByUsername = async (username) => {
     const provider = getProvider();
     const promise = new Promise((res, rej) => {
         provider.listUsers({
-            UserPoolId : pool.UserPoolId,
-            Filter : `preferred_username ^= "${username}"`
+            UserPoolId: pool.UserPoolId,
+            Filter: `preferred_username ^= "${username}"`
         }, function (err, data) {
             err ? rej(err) : res(data);
         })
@@ -41,9 +41,9 @@ const searchByUsername = async (username) => {
 
 const getProvider = () => {
     return new AWS.CognitoIdentityServiceProvider({
-        accessKeyId : process.env.cognito_key,
-        secretAccessKey : process.env.cognito_private,
-        region : process.env.cognito_region
+        accessKeyId: process.env.cognito_key,
+        secretAccessKey: process.env.cognito_private,
+        region: process.env.cognito_region
     });
 };
 
@@ -69,7 +69,7 @@ const login = async (email, password) => {
                     email: result.idToken.payload.email,
                     userId: result.idToken.payload.sub,
                     username: result.idToken.payload.preferred_username,
-                    groups : result.getAccessToken().payload["cognito:groups"]
+                    groups: result.getAccessToken().payload["cognito:groups"]
                 };
                 resolve(response)
             },
@@ -97,27 +97,32 @@ const decode = async (token) => {
     }
     const decodedJwt = jwt.decode(token, {complete: true});
     if (!decodedJwt) {
-        throw {error : "Unauthorized."};
+        throw {error: "Unauthorized."};
     }
     const kid = decodedJwt.header.kid;
     const pem = pems[kid];
     if (!pem) {
-        throw {error : "Unauthorized."};
+        throw {error: "Unauthorized."};
     }
     const verify = new Promise((res, rej) => {
         jwt.verify(token, pem, function (err, payload) {
             if (err) {
                 rej(err);
             } else {
-                res(payload);
+                res({
+                    email: payload.email,
+                    userId: payload.sub,
+                    username: payload.preferred_username,
+                    groups: payload['cognito:groups']
+                })
             }
-        }); 
+        });
     });
     return await verify;
 };
 
 const convertToUserObject = (value) => {
-    if(!value) {
+    if (!value) {
         return null;
     }
     const map = (user) => {
@@ -126,11 +131,11 @@ const convertToUserObject = (value) => {
             email: (attributes.find(w => w.Name === "email") || {}).Value,
             userId: user.Username,
             username: (attributes.find(w => w.Name === "preferred_username") || {}).Value,
-            balance : (attributes.find(w => w.Name === "custom:balance") || {}).Value,
-            instances : (attributes.find(w => w.Name === "custom:allowed_instances") || {}).Value
+            balance: (attributes.find(w => w.Name === "custom:balance") || {}).Value,
+            instances: (attributes.find(w => w.Name === "custom:allowed_instances") || {}).Value
         }
     };
-    if(Array.isArray(value)) {
+    if (Array.isArray(value)) {
         return value.map(v => map(v))
     }
     return map(value);

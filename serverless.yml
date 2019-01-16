@@ -1,4 +1,3 @@
-
 service: rspeer-serverless
 
 
@@ -30,7 +29,7 @@ plugins:
 
 functions:
   getScript:
-    name : getScript
+    name: getScript
     memoryLimit: 128
     timeout: 30
     handler: handler.getScript
@@ -40,30 +39,54 @@ functions:
           parameters:
             querystrings:
               url: true
-              
+
   createScript:
-    name : createScript
+    name: createScript
     memoryLimit: 128
     timeout: 30
     handler: handler.createScript
     events:
       - http: POST script
+
+  addScriptAccess:
+    name: addScriptAccess
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.addScriptAccess
+    events:
+       - http: POST script/access
+
+  removeAllScriptAccess:
+    name: removeAllScriptAccess
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.removeAllScriptAccess
+    events:
+      - http: DELETE script/allAccess
         
+  getScriptAccess:
+    name: getScriptAccess
+    memoryLimit: 128
+    timeout: 30
+    handler: handler.getScriptAccess
+    events:
+      - http: GET script/access      
+         
   login:
     name: login
     memoryLimit: 128
     timeout: 30
     handler: handler.login
     events:
-      - http: POST login   
-        
+      - http: POST login
+
   me:
     name: getMe
     memoryLimit: 128
     timeout: 30
     handler: handler.me
     events:
-      - http: GET user/me  
+      - http: GET user/me
 
   getUserByUsername:
     name: userbyUsername
