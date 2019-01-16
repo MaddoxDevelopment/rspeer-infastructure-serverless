@@ -6,6 +6,7 @@ global.fetch = require('node-fetch');
 const assert = require('chai').assert;
 const axios = require('axios');
 const Redis = require("../wrappers/redisWrapper");
+const {promisify} = require('util');
 
 const pool = {
     UserPoolId: process.env.cognito_user_pool_id,
@@ -13,29 +14,17 @@ const pool = {
 };
 
 const getUserById = async (id) => {
-    const provider = getProvider();
-    const promise = new Promise((res, rej) => {
-        provider.adminGetUser({
-            Username: id,
-            UserPoolId: pool.UserPoolId
-        }, function (err, data) {
-            err ? rej(err) : res(data);
-        })
-    });
-    return convertToUserObject(await promise);
+    return convertToUserObject(await promisify(getProvider().adminGetUser({
+        Username: id,
+        UserPoolId: pool.UserPoolId
+    })));
 };
 
 const searchByUsername = async (username) => {
-    const provider = getProvider();
-    const promise = new Promise((res, rej) => {
-        provider.listUsers({
-            UserPoolId: pool.UserPoolId,
-            Filter: `preferred_username ^= "${username}"`
-        }, function (err, data) {
-            err ? rej(err) : res(data);
-        })
-    });
-    const res = await promise;
+    const res = await promisify(getProvider().listUsers({
+        UserPoolId: pool.UserPoolId,
+        Filter: `preferred_username ^= "${username}"`
+    }));
     return convertToUserObject(res.Users);
 };
 

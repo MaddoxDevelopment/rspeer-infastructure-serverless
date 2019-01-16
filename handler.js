@@ -17,7 +17,6 @@ createHandler('createScript', async (event, context) => {
 
 createHandler('getScriptAccess', async (event, context) => {
   const user = await UserService.getUserFromRequest(event);
-  console.log(user);
   return ok(await ScriptAccessService.getAccess(user.userId));
 }, module);
 
