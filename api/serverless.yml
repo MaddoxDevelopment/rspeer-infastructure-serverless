@@ -44,7 +44,7 @@ functions:
     name: createScript
     memoryLimit: 128
     timeout: 30
-    handler: handler.createScript
+    handler: handlers/scriptHandler.createScript
     events:
       - http: POST script
 
@@ -52,7 +52,7 @@ functions:
     name: addScriptAccess
     memoryLimit: 128
     timeout: 30
-    handler: handler.addScriptAccess
+    handler: handlers/scriptHandler.addScriptAccess
     events:
        - http: POST script/access
 
@@ -60,7 +60,7 @@ functions:
     name: removeAllScriptAccess
     memoryLimit: 128
     timeout: 30
-    handler: handler.removeAllScriptAccess
+    handler: D.removeAllScriptAccess
     events:
       - http: DELETE script/allAccess
         
@@ -68,7 +68,7 @@ functions:
     name: getScriptAccess
     memoryLimit: 128
     timeout: 30
-    handler: handler.getScriptAccess
+    handler: handlers/scriptHandler.getScriptAccess
     events:
       - http: GET script/access      
          
@@ -76,7 +76,7 @@ functions:
     name: login
     memoryLimit: 128
     timeout: 30
-    handler: handler.login
+    handler: handlers/userHandler.login
     events:
       - http: POST login
 
@@ -84,7 +84,7 @@ functions:
     name: getMe
     memoryLimit: 128
     timeout: 30
-    handler: handler.me
+    handler: handlers/userHandler.me
     events:
       - http: GET user/me
 
@@ -92,7 +92,7 @@ functions:
     name: userbyUsername
     memoryLimit: 128
     timeout: 30
-    handler: handler.getUserByUsername
+    handler: handlers/userHandler.getUserByUsername
     events:
       - http: GET user/byUsername          
           
