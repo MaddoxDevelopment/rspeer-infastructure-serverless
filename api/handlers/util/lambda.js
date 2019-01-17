@@ -11,7 +11,7 @@ const ok = (result) => {
     return body;
 };
 
-const createHandler = async (name, handler, module) => {
+const handle = async (name, handler, module) => {
     module.exports[name] = async (event, context) => await exceptionHandler(event, context, handler);
 };
 
@@ -31,5 +31,5 @@ const exceptionHandler = async (event, context, handle) => {
 
 module.exports = {
     ok,
-    createHandler
+    handle
 };
