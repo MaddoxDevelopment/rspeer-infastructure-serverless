@@ -94,7 +94,15 @@ functions:
     timeout: 30
     handler: handlers/userHandler.getUserByUsername
     events:
-      - http: GET user/byUsername          
+      - http: GET user/byUsername        
+          
+  redisHealthCheck:
+    name: redisHealthCheck
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/healthHandler.redis
+    events:
+      - http: GET health/redis
           
          
 

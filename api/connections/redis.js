@@ -50,6 +50,9 @@ const Redis = (() => {
     };
 
     return {
+        isAlive : async () => {
+            return await getClient() != null;  
+        },
         get: async (key, fallback) => {
             const result = await promiseGet(key);
             if (!result.value) {
@@ -84,7 +87,11 @@ const Redis = (() => {
         },
         cleanup: () => {
             if (instance) {
-                instance.quit();
+                try {
+                    instance.quit();
+                } catch (ignored) {
+                    
+                }
             }
         }
     }

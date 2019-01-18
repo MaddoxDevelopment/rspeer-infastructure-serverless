@@ -1,9 +1,14 @@
 const Database = require("../../connections/db");
 const Redis = require("../../connections/redis");
 const ok = (result) => {
+    const status = (result === null || result === undefined) ? 204 : 200;
+    return response(status, result);
+};
+
+const response = (statusCode, result) => {
     const res = (result === null || result === undefined) ? 204 : 200;
     const body = {
-        'statusCode': res,
+        'statusCode': statusCode,
         'headers': {'Content-Type': 'application/json'},
         'body': JSON.stringify(result)
     };
@@ -51,5 +56,6 @@ process.on('uncaughtException', exitHandler);
 
 module.exports = {
     ok,
-    handle
+    handle,
+    response
 };
