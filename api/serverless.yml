@@ -32,7 +32,7 @@ functions:
     name: getScript
     memoryLimit: 128
     timeout: 30
-    handler: handler.getScript
+    handler: handlers/scriptHandler.getScript
     events:
       - http: GET script
         request:

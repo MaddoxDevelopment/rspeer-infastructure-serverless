@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 global.fetch = require('node-fetch');
 const assert = require('chai').assert;
 const axios = require('axios');
-const Redis = require("../wrappers/redisWrapper");
+const Redis = require("../connections/redis");
 const {promisify} = require('util');
 
 const pool = {

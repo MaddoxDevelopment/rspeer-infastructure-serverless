@@ -1,3 +1,5 @@
+const Database = require("../../connections/db");
+const Redis = require("../../connections/redis");
 const ok = (result) => {
     const res = (result === null || result === undefined) ? 204 : 200;
     const body = {
@@ -5,11 +7,12 @@ const ok = (result) => {
         'headers': {'Content-Type': 'application/json'},
         'body': JSON.stringify(result)
     };
-    if(res === 204) {
+    if (res === 204) {
         delete body.body;
     }
     return body;
 };
+
 
 const handle = async (name, handler, module) => {
     module.exports[name] = async (event, context) => await exceptionHandler(event, context, handler);
@@ -18,16 +21,33 @@ const handle = async (name, handler, module) => {
 const exceptionHandler = async (event, context, handle) => {
     try {
         return await handle(event, context)
-    } catch(ex) {
+    } catch (ex) {
         console.log(ex);
         return {
             'statusCode': 400,
             'headers': {'Content-Type': 'application/json'},
             'body': JSON.stringify(ex)
         }
+    } finally {
+       exitHandler();
     }
 };
 
+function exitHandler() {
+    try {
+        console.log("Exiting process. Clearing Redis and Database connections.");
+        Database.cleanup();
+        Redis.cleanup();
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+process.on('exit', exitHandler);
+process.on('SIGINT', exitHandler);
+process.on('SIGUSR1', exitHandler);
+process.on('SIGUSR2', exitHandler);
+process.on('uncaughtException', exitHandler);
 
 module.exports = {
     ok,

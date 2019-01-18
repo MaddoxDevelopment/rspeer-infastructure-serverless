@@ -1,5 +1,5 @@
 const CognitoService = require('./cognitoService');
-const Redis = require("../wrappers/redisWrapper");
+const Redis = require("../connections/redis");
 
 const getUserFromRequest = async (request) => {
     const auth = request.headers.Authorization;

@@ -1,4 +1,4 @@
-const db = require('./../../db');
+const db = require('./../../connections/db');
 const assert = require('chai').assert;
 
 const addAccess = async (scriptId, userId) => {

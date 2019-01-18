@@ -8,6 +8,7 @@
     "aws-sdk": "^2.388.0",
     "axios": "^0.18.0",
     "chai": "^4.2.0",
+    "ioredis": "^4.3.0",
     "jsonwebtoken": "^8.4.0",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.3.0",
