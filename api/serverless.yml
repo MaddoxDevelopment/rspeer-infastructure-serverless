@@ -104,5 +104,13 @@ functions:
     events:
       - http: GET health/redis
           
+  dbHealthCheck:
+    name: dbHealthCheck
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/healthHandler.database
+    events:
+      - http: GET health/db        
+          
          
 
