@@ -25,6 +25,7 @@ const handle = async (name, handler, module) => {
 
 const exceptionHandler = async (event, context, handle) => {
     try {
+        context.callbackWaitsForEmptyEventLoop = false;
         return await handle(event, context)
     } catch (ex) {
         console.log(ex);
@@ -41,8 +42,8 @@ const exceptionHandler = async (event, context, handle) => {
 function exitHandler() {
     try {
         console.log("Exiting process. Clearing Redis and Database connections.");
-        Database.cleanup();
-        Redis.cleanup();
+        //Database.cleanup();
+        //Redis.cleanup();
     } catch (e) {
         console.log(e);
     }
