@@ -3,9 +3,11 @@ const Redis = require("../../connections/redis");
 const assert = require('chai').assert;
 const addMinutes = require('date-fns/add_minutes');
 const format = require('date-fns/format');
+const ScriptService = require("./scriptService");
 const table = "ScriptAccess";
 
 const key = (scriptId, userId) => `script-access-${userId}-${scriptId}`;
+const setKey = (userId) => `script-access-set-${userId}`;
 
 const addAccess = async (scriptId, userId) => {
     assert.exists(scriptId);
@@ -19,7 +21,8 @@ const addAccess = async (scriptId, userId) => {
         ScriptId : scriptId,
         Expiration : total
     });
-    Redis.set(key(scriptId, userId), total, 86400);
+    Redis.set(key(scriptId, userId), total);
+    Redis.setAdd(setKey(userId), scriptId);
     return total;
 };
 
@@ -38,9 +41,23 @@ const getAccess = async (scriptId, userId) => {
     });
 };
 
+const getScripts = async (userId) => {
+    const key = setKey(userId);
+    let ids = await Redis.hashSetGetAndSet(setKey(userId));
+    if(ids == null || ids.length === 0) {
+        const result = await Dynamo.getByAttribute(table, 'UserId', userId);
+        ids = result.items.map(i => i.ScriptId);
+        Redis.setAdd(key, ids.length === 0 ? 'no-current-scripts' : ids);
+    }
+    ids = ids.filter(i => i !== 'no-current-scripts');
+    const scripts = await Promise.all(ids.map(i => ScriptService.getScript(i)));
+    return scripts.filter(s => s != null);
+};
+
 const ScriptAccessService = {
     addAccess,
-    getAccess
+    getAccess,
+    getScripts
 };
 
 module.exports = ScriptAccessService;

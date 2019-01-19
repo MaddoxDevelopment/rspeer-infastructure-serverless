@@ -76,6 +76,14 @@ functions:
     handler: handlers/scriptHandler.getScriptAccess
     events:
       - http: GET script/access      
+
+  getScriptsForUser:
+    name: getScriptsForUser
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/scriptHandler.getScriptsForUser
+    events:
+      - http: GET script/forUser
          
   login:
     name: login

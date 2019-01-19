@@ -47,7 +47,7 @@ handle({
     module,
     handler : async (event, context) => {
         const qs = event.queryStringParameters || {};
-        return ok(!qs.id ? null : await ScriptService.getScript(qs.id));
+        return ok(!qs.id ? null : await ScriptService.getScriptsByDeveloper(qs.id));
     }
 });
 
@@ -58,6 +58,15 @@ handle({
         const qs = event.queryStringParameters || {};
         const user = await UserService.getUserFromRequest(event);
         return ok(await ScriptAccessService.getAccess(qs.scriptId, user.userId))
+    }
+});
+
+handle({
+    name : 'getScriptsForUser',
+    module,
+    handler : async (event, context) => {
+        const user = await UserService.getUserFromRequest(event);
+        return ok(await ScriptAccessService.getScripts(user.userId))
     }
 });
 

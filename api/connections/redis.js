@@ -55,6 +55,23 @@ const Redis = (() => {
         })
     };
 
+    const promiseHashGet = (key) => {
+        return new Promise(async resolve => {
+            const client = await getClient();
+            if (!client) {
+                return resolve({client: null, value: null});
+            }
+            client.smembers(key, function (err, res) {
+                if (err) {
+                    console.log("ERROR GETTING", key, err);
+                    client.quit();
+                    return resolve({client: null, value: null})
+                }
+                resolve({client, value: res});
+            })
+        })
+    };
+
     return {
         getInstance : async () => {
           return await getClient();  
@@ -67,6 +84,7 @@ const Redis = (() => {
             if (!result.value) {
                 return fallback ? await fallback() : null;
             }
+            console.log("PULLING FROM REDIS", key);
             return JSON.parse(result.value);
         },
         getAndSet: async (key, fallback, expiration = 86400) => {
@@ -78,8 +96,18 @@ const Redis = (() => {
                 }
                 return value;
             }
-            console.log("PULLING FROM REDIS", result.value);
             return JSON.parse(result.value);
+        },
+        hashSetGetAndSet: async (key, fallback, expiration = 86400) => {
+            const result = await promiseHashGet(key);
+            if (!result.value && fallback != null) {
+                const value = await fallback();
+                if (result.client && value) {
+                    result.client.set(key, JSON.stringify(value), 'EX', expiration);
+                }
+                return value;
+            }
+            return result.value;
         },
         increment : async (key) => {
             const client = await getClient();
@@ -121,12 +149,16 @@ const Redis = (() => {
             });
         },
         setAdd : async (key, value) => {
+            console.log("SET ADD", key, value);
             const client = await getClient();
             if (!client) {
                 return false;
             }
             return new Promise(res => {
                 client.sadd(key, value, function (err) {
+                    if(err) {
+                        console.log(err);
+                    }
                     return res(err == null);
                 });
             });

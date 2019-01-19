@@ -19,8 +19,32 @@ const get = async (params) => {
     });
 };
 
+const getByAttribute = async (table, attribute, value, limit) => {
+    return await new Promise((res, rej) => {
+        const params = {
+            TableName: table,
+            FilterExpression: '#attr = :value',
+            ExpressionAttributeNames: {
+                '#attr': attribute,
+            },
+            ExpressionAttributeValues: {
+                ':value': value,
+            },
+        };
+        if(limit) {
+            params.Limit = limit;
+        }
+        client.scan(params, function(err, data) {
+           if(err) rej(err);
+           res({items : data.Items, count : data.Count, scanned : data.ScannedCount})
+        });
+    });
+};
+
+
 const Dynamo = {
     get,
+    getByAttribute,
     put,
     client
 };
