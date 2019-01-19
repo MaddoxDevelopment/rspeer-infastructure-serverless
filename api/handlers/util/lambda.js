@@ -1,4 +1,3 @@
-const Database = require("../../connections/db");
 const Redis = require("../../connections/redis");
 const ok = (result) => {
     const status = (result === null || result === undefined) ? 204 : 200;

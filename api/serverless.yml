@@ -12,6 +12,9 @@ provider:
     cognito_region: ${self:provider.config.cognito_region}
     cognito_user_pool_id: ${self:provider.config.cognito_user_pool_id}
     cognito_client_id: ${self:provider.config.cognito_client_id}
+    dynamo_key: ${self:provider.config.dynamo_key}
+    dynamo_private: ${self:provider.config.dynamo_private}
+    dynamo_region: ${self:provider.config.dynamo_region}
     redis_password: ${self:provider.config.redis_password}
     redis_host: ${self:provider.config.redis_host}
     postgres_user: ${self:provider.config.postgres_user}
@@ -146,3 +149,11 @@ functions:
     handler: handlers/connectedClientHandler.disconnect
     events:
       - http: POST connected/client/disconnect
+        
+  dynamoTest:
+    name: dynamoTest
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/dynamoTest.dynamo
+    events:
+      - http: GET dynamo
