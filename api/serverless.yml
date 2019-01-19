@@ -114,8 +114,8 @@ functions:
     events:
       - http: GET health/db      
           
-  checkHealth:
-    name: checkHealth
+  checkInfastructureHealth:
+    name: checkInfastructureHealth
     memoryLimit: 128
     timeout: 30
     handler: handlers/healthHandler.check

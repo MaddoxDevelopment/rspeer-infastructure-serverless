@@ -29,5 +29,5 @@ handle("check", async (event, context) => {
   }
   content += ' This is only a test message, nothing to worry about.';
   axios.post(url, {'content' : content});
-  return response(200, {ok : url});
+  return response(200, {ok : content});
 }, module);
