@@ -1,32 +1,34 @@
-const db = require('./../../connections/db');
-const redis = require('./../../connections/redis');
+const Redis = require('./../../connections/redis');
 const uuidv4 = require('uuid/v4');
+const Dynamo = require("../../connections/dynamo");
 const assert = require('chai').assert;
 
 const ScriptService = {
     getScript: async (id) => {
-        return await redis.getAndSet(`script-${id}`, async () => {
-            const instance = await db.getInstance();
-            const rows = await instance.query('SELECT * from public.scripts WHERE id = $1 LIMIT 1', [id]);
-            return rows.length === 0 ? null : rows.rows[0];
+        return await Redis.getAndSet(`script-${id}`, async () => {
+           const result = await Dynamo.get({
+               TableName : 'Scripts',
+               Key : {
+                   ScriptId : id
+               }
+           });
+           return result && result.Item != null ? result.Item : null
         });
     },
     insert: async ({name, description, price = 0, type, developerUserId}) => {
-        const contentId = uuidv4() + "-" + uuidv4();
-        const instance = await db.getInstance();
-        const insert = await instance.query(
-                `INSERT INTO public.scripts(name, contentId, description, price, type, enabled, developerUserId,
-                                            dateadded)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, current_timestamp) RETURNING *`,
-            [name, contentId, description, price, type, false, developerUserId]);
-        return insert.rows[0];
+        const payload = {
+            id : uuidv4() + "-" + uuidv4(),
+            developerId : developerUserId,
+            type : type,
+            price : price,
+            name : name,
+            description : description
+        }; 
+        await Dynamo.put('Scripts', payload);
+        await Redis.set(`script-${payload.id}`, payload);
+        await Redis.set(`script-${payload.name.toLowerCase()}`, payload.id);
     },
     setEnabled: async (accessId, value) => {
-        const instance = await db.getInstance();
-        const update = await instance.query(`UPDATE public.scripts
-                                       SET enabled = $1
-                                       WHERE accessid = $2 RETURNING *`, [value, accessId])
-        return update.rows[0]
     }
 };
 

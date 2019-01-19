@@ -1,9 +1,16 @@
 const CognitoService = require('./cognitoService');
 const Redis = require("../connections/redis");
 
-const getUserFromRequest = async (request) => {
-    const auth = request.headers.Authorization;
-    return !auth ? null : await CognitoService.decode(auth.toString().replace("Bearer ", ""));
+const getUserFromRequest = async (request, throwException = true) => {
+    try {
+        const auth = request.headers.Authorization;
+        return !auth ? null : await CognitoService.decode(auth.toString().replace("Bearer ", ""));
+    } catch (e) {
+        if(throwException) {
+            throw e;
+        }
+        return null;
+    }
 };
 
 const getFullUserById = async (id) => {

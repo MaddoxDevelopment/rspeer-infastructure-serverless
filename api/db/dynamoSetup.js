@@ -9,22 +9,14 @@ const client = new AWS.DynamoDB({
 const tables = [{
     AttributeDefinitions: [
         {
-            AttributeName: 'ScriptId',
-            AttributeType: 'S'
-        },
-        {
-            AttributeName: 'Developer',
+            AttributeName: 'id',
             AttributeType: 'S'
         }
     ],
     KeySchema: [
         {
-            AttributeName: 'ScriptId',
+            AttributeName: 'id',
             KeyType: 'HASH'
-        },
-        {
-            AttributeName: 'Developer',
-            KeyType: 'RANGE'
         }
     ],
     BillingMode: 'PAY_PER_REQUEST',

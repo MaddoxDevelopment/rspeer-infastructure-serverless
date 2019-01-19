@@ -149,11 +149,3 @@ functions:
     handler: handlers/connectedClientHandler.disconnect
     events:
       - http: POST connected/client/disconnect
-        
-  dynamoTest:
-    name: dynamoTest
-    memoryLimit: 128
-    timeout: 30
-    handler: handlers/dynamoTest.dynamo
-    events:
-      - http: GET dynamo

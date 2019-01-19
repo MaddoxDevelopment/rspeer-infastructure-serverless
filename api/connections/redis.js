@@ -69,7 +69,7 @@ const Redis = (() => {
             }
             return JSON.parse(result.value);
         },
-        getAndSet: async (key, fallback, expiration = 1440) => {
+        getAndSet: async (key, fallback, expiration = 86400) => {
             const result = await promiseGet(key);
             if (!result.value) {
                 const value = await fallback();
@@ -78,7 +78,26 @@ const Redis = (() => {
                 }
                 return value;
             }
+            console.log("PULLING FROM REDIS", result.value);
             return JSON.parse(result.value);
+        },
+        increment : async (key) => {
+            const client = await getClient();
+            if (!client) {
+                return;
+            }
+            return await new Promise((resolve, reject) => {
+                client.incr(key, (err, value) => {
+                    err ? reject(err) : resolve(value);
+                });
+            })
+        },
+        expire : async (key, seconds) => {
+            const client = await getClient();
+            if (!client) {
+                return;
+            }
+            client.expire(key, seconds)
         },
         remove: async (key) => {
             const client = await getClient();
@@ -87,13 +106,12 @@ const Redis = (() => {
             }
             client.del(key);
         },
-        set: async (key, value, expiration = 1440) => {
+        set: async (key, value, expiration = 86400) => {
             const client = await getClient();
             if (!client) {
                 return false;
             }
             return new Promise(res => {
-                console.log(expiration);
                 client.set(key, JSON.stringify(value), 'EX', expiration, function (err) {
                     if(err) {
                         console.log(err);
