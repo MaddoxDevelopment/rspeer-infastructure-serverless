@@ -20,8 +20,12 @@ const Database = (() => {
 
     return {
         isAlive : async function() {
-          const instance = await createInstance();
-          return instance != null;
+            try {
+                const instance = await createInstance();
+                return instance != null;
+            } catch (e) {
+                return false;
+            }
         },
         cleanup: function () {
             if (instance != null) {

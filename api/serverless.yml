@@ -23,6 +23,8 @@ provider:
     spaces_secret: ${self:provider.config.spaces_secret}
     spaces_bucket: ${self:provider.config.spaces_bucket}
     spaces_endpoint: ${self:provider.config.spaces_endpoint}
+    discord_status_webhook: ${self:provider.config.discord_status_webhook}
+    discord_role_mention: ${self:provider.config.discord_role_mention}
 
 plugins:
   - serverless-offline
@@ -110,7 +112,16 @@ functions:
     timeout: 30
     handler: handlers/healthHandler.database
     events:
-      - http: GET health/db        
+      - http: GET health/db      
+          
+  checkHealth:
+    name: checkHealth
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/healthHandler.check
+    events:
+      - schedule:
+          rate: cron(0/5 * * * ? *)   
           
          
 

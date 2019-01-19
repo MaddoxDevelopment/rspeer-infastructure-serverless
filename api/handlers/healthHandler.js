@@ -8,11 +8,26 @@ handle('redis', async (event, context) => {
 }, module);
 
 handle('database', async (event, context) => {
-  try {
-    const alive = await Database.isAlive();
-    return response(200, {alive})
-  } catch (e) {
-    console.log(e);
-    return response(503, {alive : false})
+  const alive = await Database.isAlive();
+  return response(alive ? 200 : 503, {alive})
+}, module);
+
+handle("check", async (event, context) => {
+  const url = process.env.discord_status_webhook;
+  const role = process.env.discord_role_mention;
+  const axios = require('axios');
+  let content = "";
+  if(await Database.isAlive()) {
+    content = "Database: OK";
+  } else {
+    content = `${role} Database: Unable to connect to postgres`;
   }
+  if(await Redis.isAlive()) {
+    content += ', Redis: OK.';
+  } else {
+    content = `, ${role} Redis: Unable to connect to redis.`;
+  }
+  content += ' This is only a test message, nothing to worry about.';
+  axios.post(url, {'content' : content});
+  return response(200, {ok : url});
 }, module);
