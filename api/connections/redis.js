@@ -14,9 +14,13 @@ const Redis = (() => {
                 connectTimeout : 2000
             });
             client.on("error", (err) => {
+                console.log(err);
+                instance = null;
                 resolve(null);
             });
             client.on("close", (err) => {
+                console.log(err);
+                instance = null;
                 resolve(null);
             });
             client.on("ready", () => {
@@ -24,9 +28,11 @@ const Redis = (() => {
                 resolve(client);
             });
             client.on("reconnecting", () => {
+                instance = null;
                 resolve(null);
             });
             client.on('end', () => {
+                instance = null;
                 resolve(null);
             });
         });
@@ -50,6 +56,9 @@ const Redis = (() => {
     };
 
     return {
+        getInstance : async () => {
+          return await getClient();  
+        },
         isAlive : async () => {
             return await getClient() != null;  
         },
@@ -60,12 +69,12 @@ const Redis = (() => {
             }
             return JSON.parse(result.value);
         },
-        getAndSet: async (key, fallback, expiration = 86400) => {
+        getAndSet: async (key, fallback, expiration = 1440) => {
             const result = await promiseGet(key);
             if (!result.value) {
                 const value = await fallback();
                 if (result.client && value) {
-                    result.client.set(key, JSON.stringify(result), 'EX', expiration);
+                    result.client.set(key, JSON.stringify(value), 'EX', expiration);
                 }
                 return value;
             }
@@ -78,12 +87,31 @@ const Redis = (() => {
             }
             client.del(key);
         },
-        set: async (key, value) => {
+        set: async (key, value, expiration = 1440) => {
             const client = await getClient();
             if (!client) {
-                return;
+                return false;
             }
-            await client.set(key, JSON.stringify(value))
+            return new Promise(res => {
+                console.log(expiration);
+                client.set(key, JSON.stringify(value), 'EX', expiration, function (err) {
+                    if(err) {
+                        console.log(err);
+                    }
+                    return res(err == null);
+                });
+            });
+        },
+        setAdd : async (key, value) => {
+            const client = await getClient();
+            if (!client) {
+                return false;
+            }
+            return new Promise(res => {
+                client.sadd(key, value, function (err) {
+                    return res(err == null);
+                });
+            });
         },
         cleanup: () => {
             if (instance) {

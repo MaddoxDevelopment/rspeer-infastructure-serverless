@@ -34,7 +34,12 @@ const Database = (() => {
         },
         getInstance: async function () {
             if (!instance) {
-                instance = await createInstance();
+                try {
+                    instance = await createInstance();
+                } catch (e) {
+                    console.log(e);
+                    return null;
+                }
             }
             return instance;
         }

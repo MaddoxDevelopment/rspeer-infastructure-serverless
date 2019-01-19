@@ -86,12 +86,12 @@ const decode = async (token) => {
     }
     const decodedJwt = jwt.decode(token, {complete: true});
     if (!decodedJwt) {
-        throw {error: "Unauthorized."};
+        throw {error: "Failed to decode JWT."};
     }
     const kid = decodedJwt.header.kid;
     const pem = pems[kid];
     if (!pem) {
-        throw {error: "Unauthorized."};
+        throw {error: "Failed to get pem."};
     }
     const verify = new Promise((res, rej) => {
         jwt.verify(token, pem, function (err, payload) {

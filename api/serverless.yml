@@ -123,5 +123,26 @@ functions:
       - schedule:
           rate: cron(0/5 * * * ? *)   
           
-         
+  pingConnectedClient:
+    name: pingConnectedClient
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/connectedClientHandler.ping
+    events:
+      - http: POST connected/client/ping   
+        
+  countConnectedClient:
+    name: countConnectedClient
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/connectedClientHandler.count
+    events:
+      - http: POST connected/client/count
 
+  disconnectConnectedClient:
+    name: disconnectConnectedClient
+    memoryLimit: 128
+    timeout: 30
+    handler: handlers/connectedClientHandler.disconnect
+    events:
+      - http: POST connected/client/disconnect

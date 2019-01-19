@@ -23,9 +23,9 @@ handle("check", async (event, context) => {
     content = `${role} Database: Unable to connect to postgres`;
   }
   if(await Redis.isAlive()) {
-    content += ', Redis: OK.';
+    content += ' Redis: OK.';
   } else {
-    content = `, ${role} Redis: Unable to connect to redis.`;
+    content = ` ${role} Redis: Unable to connect to redis.`;
   }
   content += ' This is only a test message, nothing to worry about.';
   axios.post(url, {'content' : content});

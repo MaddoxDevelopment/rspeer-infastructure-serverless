@@ -42,5 +42,24 @@ alter table script_access
   add constraint script_access_pk
     primary key (id);
 
+create table clients_connected
+(
+  id serial not null,
+  clientId varchar(100) not null,
+  userId uuid not null,
+  lastUpdate timestamptz default current_timestamp not null,
+  ipAddress varchar(50)
+);
 
+create unique index clients_connected_clientId_uindex
+  on clients_connected (clientId);
 
+create unique index clients_connected_id_uindex
+  on clients_connected (id);
+
+alter table clients_connected
+  add constraint clients_connected_pk
+    primary key (id);
+
+create index clients_connected_userid_index
+  on clients_connected (userid);
